@@ -14,7 +14,7 @@ class WeatherApp extends StatelessWidget {
       title: 'Weather App',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Weather App V2'),
+          title: const Text('Weather App'),
         ),
         body: const Center(
           child: Text(
