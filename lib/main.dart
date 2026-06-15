@@ -1,28 +1,33 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const WeatherApp());
-}
+import 'features/weather/data/datasource/weather_remote_datasource.dart';
 
-class WeatherApp extends StatelessWidget {
-  const WeatherApp({super.key});
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Weather App',
+  final datasource =
+      WeatherRemoteDataSource(Dio());
+
+  try {
+    final weather =
+        await datasource.getCurrentWeather(
+      'Colombo',
+    );
+
+    print(weather.cityName);
+    print(weather.temperature);
+  } catch (e) {
+    print(e);
+  }
+
+  runApp(
+    const MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Weather App'),
-        ),
-        body: const Center(
-          child: Text(
-            'Weather App Setup Complete',
-            style: TextStyle(fontSize: 20),
-          ),
+        body: Center(
+          child: Text('Weather App'),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
