@@ -13,6 +13,8 @@ class WeatherPage extends ConsumerWidget {
 
     final weatherAsync = ref.watch(weatherProvider(city));
 
+    final forecastAsync = ref.watch(forecastProvider(city));
+
     final cityController = TextEditingController();
 
     return Scaffold(
@@ -196,6 +198,28 @@ class WeatherPage extends ConsumerWidget {
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                         ),
+                                      ),
+                                      const SizedBox(height: 30),
+
+                                      forecastAsync.when(
+                                        loading: () =>
+                                            const CircularProgressIndicator(),
+
+                                        error: (e, _) => Text(
+                                          e.toString(),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+
+                                        data: (forecasts) {
+                                          return Text(
+                                            'Forecast Items: ${forecasts.length}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
