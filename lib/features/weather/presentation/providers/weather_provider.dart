@@ -5,6 +5,7 @@ import '../../data/datasource/weather_remote_datasource.dart';
 import '../../data/repository/weather_repository_impl.dart';
 import '../../domain/entities/weather_entity.dart';
 
+/// Remote Data Source
 final weatherRemoteDataSourceProvider =
     Provider<WeatherRemoteDataSource>((ref) {
   return WeatherRemoteDataSource(
@@ -12,20 +13,37 @@ final weatherRemoteDataSourceProvider =
   );
 });
 
+/// Repository
 final weatherRepositoryProvider =
     Provider<WeatherRepositoryImpl>((ref) {
   return WeatherRepositoryImpl(
-    ref.read(
-      weatherRemoteDataSourceProvider,
-    ),
+    ref.read(weatherRemoteDataSourceProvider),
   );
 });
 
+/// Selected City
+class CityNotifier extends Notifier<String> {
+  @override
+  String build() {
+    return 'Colombo';
+  }
+
+  void setCity(String city) {
+    state = city;
+  }
+}
+
+final cityProvider =
+    NotifierProvider<CityNotifier, String>(
+  CityNotifier.new,
+);
+
+/// Weather Data
 final weatherProvider =
-    FutureProvider.family<
-        WeatherEntity,
-        String>((ref, city) async {
-  return ref
-      .read(weatherRepositoryProvider)
-      .getCurrentWeather(city);
-});
+    FutureProvider.family<WeatherEntity, String>(
+  (ref, city) async {
+    return ref
+        .read(weatherRepositoryProvider)
+        .getCurrentWeather(city);
+  },
+);
