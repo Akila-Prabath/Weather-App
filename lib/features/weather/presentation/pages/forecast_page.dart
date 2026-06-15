@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-class ForecastPage extends StatelessWidget {
-  const ForecastPage({super.key});
+import '../providers/weather_provider.dart';
+
+class ForecastPage extends ConsumerWidget {
+  final String city;
+
+  const ForecastPage({super.key, required this.city});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final forecastAsync = ref.watch(forecastProvider(city));
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 1, 17, 22),
+      backgroundColor: const Color.fromARGB(255, 1, 17, 22),
+
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -18,10 +27,7 @@ class ForecastPage extends StatelessWidget {
             child: CircleAvatar(
               radius: 18,
               backgroundColor: Colors.white.withOpacity(0.1),
-              child: const Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.more_horiz, color: Colors.white),
             ),
           ),
         ],
@@ -39,97 +45,109 @@ class ForecastPage extends StatelessWidget {
             ],
           ),
         ),
+
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Today',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: forecastAsync.when(
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+
+            error: (e, _) => Center(
+              child: Text(
+                e.toString(),
+                style: const TextStyle(color: Colors.white),
               ),
+            ),
 
-              const SizedBox(height: 16),
+            data: (forecasts) {
+              final dailyForecasts = <dynamic>[];
+              final addedDates = <String>{};
 
-              SizedBox(
-                height: 130,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    HourlyForecastCard(
-                      time: '12:00',
-                      temp: '32°',
-                      icon: '04d',
-                      selected: true,
-                    ),
-                    HourlyForecastCard(
-                      time: '13:00',
-                      temp: '32°',
-                      icon: '10d',
-                    ),
-                    HourlyForecastCard(
-                      time: '14:00',
-                      temp: '31°',
-                      icon: '04d',
-                    ),
-                    HourlyForecastCard(
-                      time: '15:00',
-                      temp: '30°',
-                      icon: '10d',
-                    ),
-                  ],
-                ),
-              ),
+              for (final forecast in forecasts) {
+                final date = DateTime.parse(forecast.time);
 
-              const SizedBox(height: 24),
+                final dateKey = DateFormat('yyyy-MM-dd').format(date);
 
-              const Text(
-                'Next Forecast',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                if (!addedDates.contains(dateKey)) {
+                  addedDates.add(dateKey);
+                  dailyForecasts.add(forecast);
+                }
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Today',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
 
-              const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-              Expanded(
-                child: ListView(
-                  children: const [
-                    ForecastDayCard(
-                      day: 'Friday',
-                      date: 'Jan, 05',
-                      temp: '32°',
-                      icon: '10d',
+                  SizedBox(
+                    height: 130,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: forecasts.length,
+                      itemBuilder: (context, index) {
+                        final forecast = forecasts[index];
+
+                        final time = DateTime.parse(forecast.time);
+
+                        return HourlyForecastCard(
+                          time: DateFormat('HH:mm').format(time),
+
+                          temp: '${forecast.temperature.toStringAsFixed(0)}°',
+
+                          icon: forecast.iconCode,
+
+                          selected: index == 0,
+                        );
+                      },
                     ),
-                    ForecastDayCard(
-                      day: 'Saturday',
-                      date: 'Jan, 06',
-                      temp: '30°',
-                      icon: '04d',
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  const Text(
+                    'Next Forecast',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                    ForecastDayCard(
-                      day: 'Sunday',
-                      date: 'Jan, 07',
-                      temp: '29°',
-                      icon: '09d',
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: dailyForecasts.length,
+
+                      itemBuilder: (context, index) {
+                        final forecast = dailyForecasts[index];
+
+                        final date = DateTime.parse(forecast.time);
+
+                        return ForecastDayCard(
+                          day: DateFormat('EEEE').format(date),
+
+                          date: DateFormat('MMM d').format(date),
+
+                          temp: '${forecast.temperature.toStringAsFixed(0)}°',
+
+                          icon: forecast.iconCode,
+                        );
+                      },
                     ),
-                    ForecastDayCard(
-                      day: 'Monday',
-                      date: 'Jan, 08',
-                      temp: '31°',
-                      icon: '10d',
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -161,20 +179,12 @@ class HourlyForecastCard extends StatelessWidget {
             ? Color.fromARGB(255, 3, 39, 50)
             : Color.fromARGB(255, 3, 39, 50),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.white10,
-        ),
+        border: Border.all(color: Colors.white10),
       ),
       child: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            time,
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
+          Text(time, style: const TextStyle(color: Colors.white)),
 
           const SizedBox(height: 8),
 
@@ -221,33 +231,24 @@ class ForecastDayCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Color.fromARGB(255, 3, 39, 50),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: Colors.white10,
-        ),
+        border: Border.all(color: Colors.white10),
       ),
       child: Row(
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   day,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  date,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                  ),
-                ),
+                Text(date, style: const TextStyle(color: Colors.white70)),
               ],
             ),
           ),

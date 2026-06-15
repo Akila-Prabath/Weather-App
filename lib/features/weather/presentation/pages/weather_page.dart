@@ -278,7 +278,7 @@ class WeatherPage extends ConsumerWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (_) =>
-                                                    const ForecastPage(),
+                                                    ForecastPage(city: city),
                                               ),
                                             );
                                           },
@@ -336,7 +336,9 @@ class WeatherPage extends ConsumerWidget {
                                       height: 140,
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
-                                        itemCount: forecasts.length,
+                                        itemCount: forecasts.length > 8
+                                            ? 8
+                                            : forecasts.length,
 
                                         itemBuilder: (context, index) {
                                           final forecast = forecasts[index];

@@ -33,9 +33,6 @@ class WeatherRemoteDataSource {
 
     final List forecasts = response.data['list'];
 
-    return forecasts
-        .take(8)
-        .map((json) => ForecastModel.fromJson(json))
-        .toList();
+    return forecasts.map((json) => ForecastModel.fromJson(json)).toList();
   }
 }
