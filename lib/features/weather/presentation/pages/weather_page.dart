@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../providers/weather_provider.dart';
+import 'forecast_page.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({super.key});
@@ -252,50 +253,91 @@ class WeatherPage extends ConsumerWidget {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Header
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          'Forecast',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    const ForecastPage(),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 10),
+
+                                    // Tabs
                                     Consumer(
                                       builder: (context, ref, child) {
                                         final selectedTab = ref.watch(
                                           forecastTabProvider,
                                         );
 
-                                        return Row(
-                                          children: [
-                                            _forecastTab(
-                                              ref,
-                                              'Today',
-                                              0,
-                                              selectedTab,
-                                            ),
+                                        return SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            children: [
+                                              _forecastTab(
+                                                ref,
+                                                'Today',
+                                                0,
+                                                selectedTab,
+                                              ),
 
-                                            const SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
-                                            _forecastTab(
-                                              ref,
-                                              'Tomorrow',
-                                              1,
-                                              selectedTab,
-                                            ),
+                                              _forecastTab(
+                                                ref,
+                                                'Tomorrow',
+                                                1,
+                                                selectedTab,
+                                              ),
 
-                                            const SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
-                                            _forecastTab(
-                                              ref,
-                                              'Next 10 Days',
-                                              2,
-                                              selectedTab,
-                                            ),
-                                          ],
+                                              _forecastTab(
+                                                ref,
+                                                'Next 5 Days',
+                                                2,
+                                                selectedTab,
+                                              ),
+                                            ],
+                                          ),
                                         );
                                       },
                                     ),
 
-                                    const SizedBox(height: 15),
+                                    const SizedBox(height: 20),
 
+                                    // Hourly Forecast Cards
                                     SizedBox(
                                       height: 140,
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
                                         itemCount: forecasts.length,
+
                                         itemBuilder: (context, index) {
                                           final forecast = forecasts[index];
 
@@ -308,13 +350,18 @@ class WeatherPage extends ConsumerWidget {
                                             margin: const EdgeInsets.only(
                                               right: 12,
                                             ),
+
                                             decoration: BoxDecoration(
                                               color: Colors.white.withOpacity(
                                                 0.08,
                                               ),
                                               borderRadius:
                                                   BorderRadius.circular(24),
+                                              border: Border.all(
+                                                color: Colors.white10,
+                                              ),
                                             ),
+
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
@@ -326,11 +373,15 @@ class WeatherPage extends ConsumerWidget {
                                                   ),
                                                 ),
 
+                                                const SizedBox(height: 8),
+
                                                 Image.network(
                                                   'https://openweathermap.org/img/wn/${forecast.iconCode}@2x.png',
                                                   width: 50,
                                                   height: 50,
                                                 ),
+
+                                                const SizedBox(height: 8),
 
                                                 Text(
                                                   '${forecast.temperature.toStringAsFixed(0)}°',
