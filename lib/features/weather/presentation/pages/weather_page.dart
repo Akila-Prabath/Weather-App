@@ -70,7 +70,7 @@ class WeatherPage extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
                           children: [
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 20),
 
                             // Search Bar
                             Container(
@@ -111,7 +111,7 @@ class WeatherPage extends ConsumerWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 40),
+                            const SizedBox(height: 20),
 
                             Text(
                               currentDate,
@@ -137,14 +137,14 @@ class WeatherPage extends ConsumerWidget {
 
                             Image.network(
                               'https://openweathermap.org/img/wn/${weather.iconCode}@4x.png',
-                              width: 160,
-                              height: 160,
+                              width: 120,
+                              height: 120,
                             ),
 
                             Text(
                               '${weather.temperature.toStringAsFixed(1)}°',
                               style: const TextStyle(
-                                fontSize: 82,
+                                fontSize: 68,
                                 fontWeight: FontWeight.w300,
                                 color: Colors.white,
                                 height: 1,
@@ -162,8 +162,9 @@ class WeatherPage extends ConsumerWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 20),
 
+                            // Weather Card
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(
@@ -198,28 +199,6 @@ class WeatherPage extends ConsumerWidget {
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                         ),
-                                      ),
-                                      const SizedBox(height: 30),
-
-                                      forecastAsync.when(
-                                        loading: () =>
-                                            const CircularProgressIndicator(),
-
-                                        error: (e, _) => Text(
-                                          e.toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-
-                                        data: (forecasts) {
-                                          return Text(
-                                            'Forecast Items: ${forecasts.length}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          );
-                                        },
                                       ),
                                     ],
                                   ),
@@ -256,6 +235,122 @@ class WeatherPage extends ConsumerWidget {
                               ),
                             ),
 
+                            const SizedBox(height: 35),
+
+                            // Forecast Section
+                            forecastAsync.when(
+                              loading: () => const CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+
+                              error: (e, _) => Text(
+                                e.toString(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+
+                              data: (forecasts) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Consumer(
+                                      builder: (context, ref, child) {
+                                        final selectedTab = ref.watch(
+                                          forecastTabProvider,
+                                        );
+
+                                        return Row(
+                                          children: [
+                                            _forecastTab(
+                                              ref,
+                                              'Today',
+                                              0,
+                                              selectedTab,
+                                            ),
+
+                                            const SizedBox(width: 12),
+
+                                            _forecastTab(
+                                              ref,
+                                              'Tomorrow',
+                                              1,
+                                              selectedTab,
+                                            ),
+
+                                            const SizedBox(width: 12),
+
+                                            _forecastTab(
+                                              ref,
+                                              'Next 10 Days',
+                                              2,
+                                              selectedTab,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+
+                                    const SizedBox(height: 15),
+
+                                    SizedBox(
+                                      height: 140,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: forecasts.length,
+                                        itemBuilder: (context, index) {
+                                          final forecast = forecasts[index];
+
+                                          final time = DateTime.parse(
+                                            forecast.time,
+                                          );
+
+                                          return Container(
+                                            width: 100,
+                                            margin: const EdgeInsets.only(
+                                              right: 12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(
+                                                0.08,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  '${time.hour}:00',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+
+                                                Image.network(
+                                                  'https://openweathermap.org/img/wn/${forecast.iconCode}@2x.png',
+                                                  width: 50,
+                                                  height: 50,
+                                                ),
+
+                                                Text(
+                                                  '${forecast.temperature.toStringAsFixed(0)}°',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+
                             const SizedBox(height: 40),
                           ],
                         ),
@@ -266,6 +361,38 @@ class WeatherPage extends ConsumerWidget {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _forecastTab(
+    WidgetRef ref,
+    String title,
+    int index,
+    int selectedIndex,
+  ) {
+    final isSelected = index == selectedIndex;
+
+    return GestureDetector(
+      onTap: () {
+        ref.read(forecastTabProvider.notifier).changeTab(index);
+      },
+
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.white.withOpacity(0.15)
+              : Colors.transparent,
+
+          borderRadius: BorderRadius.circular(16),
+        ),
+
+        child: Text(
+          title,
+          style: TextStyle(color: isSelected ? Colors.white : Colors.white70),
         ),
       ),
     );

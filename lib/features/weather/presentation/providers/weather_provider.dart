@@ -59,3 +59,20 @@ final forecastProvider =
         .getForecast(city);
   },
 );
+
+class ForecastTabNotifier
+    extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void changeTab(int index) {
+    state = index;
+  }
+}
+
+final forecastTabProvider =
+    NotifierProvider<
+        ForecastTabNotifier,
+        int>(
+  ForecastTabNotifier.new,
+);
