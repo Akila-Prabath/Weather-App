@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../widgets/weather_detail_card.dart';
 import '../providers/weather_provider.dart';
 import 'forecast_page.dart';
+import '../../domain/entities/forecast_entity.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({super.key});
@@ -229,6 +230,83 @@ class WeatherPage extends ConsumerWidget {
                               ),
 
                               data: (forecasts) {
+                                final selectedTab = ref.watch(
+                                  forecastTabProvider,
+                                );
+                                final now = DateTime.now();
+
+                                List<ForecastEntity> filteredForecasts = [];
+
+                                if (selectedTab == 0) {
+                                  // Today
+                                  filteredForecasts = forecasts.where((
+                                    forecast,
+                                  ) {
+                                    final date = DateTime.parse(forecast.time);
+
+                                    return date.day == now.day &&
+                                        date.month == now.month &&
+                                        date.year == now.year;
+                                  }).toList();
+                                } else if (selectedTab == 1) {
+                                  // Tomorrow
+                                  final tomorrow = now.add(
+                                    const Duration(days: 1),
+                                  );
+
+                                  filteredForecasts = forecasts.where((
+                                    forecast,
+                                  ) {
+                                    final date = DateTime.parse(forecast.time);
+
+                                    return date.day == tomorrow.day &&
+                                        date.month == tomorrow.month &&
+                                        date.year == tomorrow.year;
+                                  }).toList();
+                                } else {
+                                  // Next 5 Days
+                                  final addedDates = <String>{};
+
+                                  final tomorrow = DateTime.now().add(
+                                    const Duration(days: 1),
+                                  );
+
+                                  final tomorrowKey = DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(tomorrow);
+
+                                  filteredForecasts = forecasts
+                                      .where((forecast) {
+                                        final date = DateTime.parse(
+                                          forecast.time,
+                                        );
+
+                                        final key = DateFormat(
+                                          'yyyy-MM-dd',
+                                        ).format(date);
+
+                                        // Only start from tomorrow onwards
+                                        if (date.isBefore(
+                                          DateTime(
+                                            tomorrow.year,
+                                            tomorrow.month,
+                                            tomorrow.day,
+                                          ),
+                                        )) {
+                                          return false;
+                                        }
+
+                                        // One forecast per day
+                                        if (addedDates.contains(key)) {
+                                          return false;
+                                        }
+
+                                        addedDates.add(key);
+                                        return true;
+                                      })
+                                      .take(5)
+                                      .toList();
+                                }
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -298,7 +376,7 @@ class WeatherPage extends ConsumerWidget {
 
                                               _forecastTab(
                                                 ref,
-                                                'Next 5 Days',
+                                                '5 Days',
                                                 2,
                                                 selectedTab,
                                               ),
@@ -311,73 +389,161 @@ class WeatherPage extends ConsumerWidget {
                                     const SizedBox(height: 20),
 
                                     // Hourly Forecast Cards
-                                    SizedBox(
-                                      height: 140,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: forecasts.length > 8
-                                            ? 8
-                                            : forecasts.length,
+                                    selectedTab == 2
+                                        ? SizedBox(
+                                            height: 170,
+                                            child: ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount:
+                                                  filteredForecasts.length > 5
+                                                  ? 5
+                                                  : filteredForecasts.length,
+                                              itemBuilder: (context, index) {
+                                                final forecast =
+                                                    filteredForecasts[index];
 
-                                        itemBuilder: (context, index) {
-                                          final forecast = forecasts[index];
+                                                final date = DateTime.parse(
+                                                  forecast.time,
+                                                );
 
-                                          final time = DateTime.parse(
-                                            forecast.time,
-                                          );
-
-                                          return Container(
-                                            width: 100,
-                                            margin: const EdgeInsets.only(
-                                              right: 12,
-                                            ),
-
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(
-                                                0.08,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(24),
-                                              border: Border.all(
-                                                color: Colors.white10,
-                                              ),
-                                            ),
-
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  '${time.hour}:00',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
+                                                return Container(
+                                                  width: 120,
+                                                  margin: const EdgeInsets.only(
+                                                    right: 12,
                                                   ),
-                                                ),
-
-                                                const SizedBox(height: 8),
-
-                                                Image.network(
-                                                  'https://openweathermap.org/img/wn/${forecast.iconCode}@2x.png',
-                                                  width: 50,
-                                                  height: 50,
-                                                ),
-
-                                                const SizedBox(height: 8),
-
-                                                Text(
-                                                  '${forecast.temperature.toStringAsFixed(0)}°',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.bold,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white
+                                                        .withOpacity(0.08),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          24,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: Colors.white10,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        DateFormat(
+                                                          'EEE',
+                                                        ).format(date),
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+
+                                                      const SizedBox(height: 8),
+
+                                                      Text(
+                                                        DateFormat(
+                                                          'MMM d',
+                                                        ).format(date),
+                                                        style: const TextStyle(
+                                                          color: Colors.white70,
+                                                        ),
+                                                      ),
+
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+
+                                                      Image.network(
+                                                        'https://openweathermap.org/img/wn/${forecast.iconCode}@2x.png',
+                                                        width: 60,
+                                                      ),
+
+                                                      const SizedBox(height: 8),
+
+                                                      Text(
+                                                        '${forecast.temperature.toStringAsFixed(0)}°',
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 24,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                          );
-                                        },
-                                      ),
-                                    ),
+                                          )
+                                        : SizedBox(
+                                            height: 140,
+                                            child: ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount:
+                                                  filteredForecasts.length > 8
+                                                  ? 8
+                                                  : filteredForecasts.length,
+                                              itemBuilder: (context, index) {
+                                                final forecast =
+                                                    filteredForecasts[index];
+
+                                                final time = DateTime.parse(
+                                                  forecast.time,
+                                                );
+
+                                                return Container(
+                                                  width: 100,
+                                                  margin: const EdgeInsets.only(
+                                                    right: 12,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white
+                                                        .withOpacity(0.08),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          24,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: Colors.white10,
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        '${time.hour}:00',
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+
+                                                      const SizedBox(height: 8),
+
+                                                      Image.network(
+                                                        'https://openweathermap.org/img/wn/${forecast.iconCode}@2x.png',
+                                                        width: 50,
+                                                      ),
+
+                                                      const SizedBox(height: 8),
+
+                                                      Text(
+                                                        '${forecast.temperature.toStringAsFixed(0)}°',
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 22,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
                                   ],
                                 );
                               },
