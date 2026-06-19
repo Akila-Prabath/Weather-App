@@ -5,6 +5,7 @@ import '../widgets/weather_detail_card.dart';
 import '../providers/weather_provider.dart';
 import 'forecast_page.dart';
 import '../../domain/entities/forecast_entity.dart';
+import '../../../../core/utils/weather_background.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({super.key});
@@ -21,10 +22,11 @@ class WeatherPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weather App'),
+        toolbarHeight: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
       ),
       extendBodyBehindAppBar: true,
 

@@ -64,20 +64,33 @@ class ForecastPage extends ConsumerWidget {
               final dailyForecasts = <dynamic>[];
               final addedDates = <String>{};
 
-              final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+              final tomorrow = DateTime.now().add(const Duration(days: 1));
+
+              final tomorrowDate = DateTime(
+                tomorrow.year,
+                tomorrow.month,
+                tomorrow.day,
+              );
 
               for (final forecast in forecasts) {
                 final date = DateTime.parse(forecast.time);
 
-                final dateKey = DateFormat('yyyy-MM-dd').format(date);
-
-                if (dateKey == todayKey) {
+                // Skip anything before tomorrow
+                if (date.isBefore(tomorrowDate)) {
                   continue;
                 }
 
+                final dateKey = DateFormat('yyyy-MM-dd').format(date);
+
+                // Keep only one forecast per day
                 if (!addedDates.contains(dateKey)) {
                   addedDates.add(dateKey);
                   dailyForecasts.add(forecast);
+                }
+
+                // Stop after 5 days
+                if (dailyForecasts.length == 5) {
+                  break;
                 }
               }
               return Column(
