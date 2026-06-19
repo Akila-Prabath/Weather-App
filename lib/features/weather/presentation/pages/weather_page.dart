@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
+import '../widgets/weather_detail_card.dart';
 import '../providers/weather_provider.dart';
 import 'forecast_page.dart';
 
@@ -166,74 +166,42 @@ class WeatherPage extends ConsumerWidget {
                             const SizedBox(height: 20),
 
                             // Weather Card
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 24,
-                                horizontal: 20,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.06),
-                                borderRadius: BorderRadius.circular(28),
-                                border: Border.all(color: Colors.white10),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Column(
-                                    children: [
-                                      const Icon(
-                                        Icons.water_drop,
-                                        color: Colors.white70,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      const Text(
-                                        'Humidity',
-                                        style: TextStyle(color: Colors.white70),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${weather.humidity}%',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                            GridView.count(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
 
-                                  Container(
-                                    width: 1,
-                                    height: 70,
-                                    color: Colors.white12,
-                                  ),
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 1.5,
 
-                                  Column(
-                                    children: [
-                                      const Icon(
-                                        Icons.air,
-                                        color: Colors.white70,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      const Text(
-                                        'Wind',
-                                        style: TextStyle(color: Colors.white70),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${weather.windSpeed.toStringAsFixed(1)} m/s',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                              children: [
+                                WeatherDetailCard(
+                                  icon: Icons.water_drop,
+                                  title: 'Humidity',
+                                  value: '${weather.humidity}%',
+                                ),
+
+                                WeatherDetailCard(
+                                  icon: Icons.air,
+                                  title: 'Wind',
+                                  value:
+                                      '${weather.windSpeed.toStringAsFixed(1)} m/s',
+                                ),
+
+                                WeatherDetailCard(
+                                  icon: Icons.speed,
+                                  title: 'Pressure',
+                                  value: '${weather.pressure} hPa',
+                                ),
+
+                                WeatherDetailCard(
+                                  icon: Icons.thermostat,
+                                  title: 'Feels Like',
+                                  value:
+                                      '${weather.feelsLike.toStringAsFixed(1)}°',
+                                ),
+                              ],
                             ),
 
                             const SizedBox(height: 35),

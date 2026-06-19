@@ -64,10 +64,16 @@ class ForecastPage extends ConsumerWidget {
               final dailyForecasts = <dynamic>[];
               final addedDates = <String>{};
 
+              final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
               for (final forecast in forecasts) {
                 final date = DateTime.parse(forecast.time);
 
                 final dateKey = DateFormat('yyyy-MM-dd').format(date);
+
+                if (dateKey == todayKey) {
+                  continue;
+                }
 
                 if (!addedDates.contains(dateKey)) {
                   addedDates.add(dateKey);
