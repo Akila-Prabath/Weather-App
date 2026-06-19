@@ -5,6 +5,7 @@ import '../../data/datasource/weather_remote_datasource.dart';
 import '../../data/repository/weather_repository_impl.dart';
 import '../../domain/entities/weather_entity.dart';
 import '../../domain/entities/forecast_entity.dart';
+import '../../../../core/location/location_provider.dart';
 
 /// Remote Data Source
 final weatherRemoteDataSourceProvider =
@@ -76,3 +77,23 @@ final forecastTabProvider =
         int>(
   ForecastTabNotifier.new,
 );
+
+final locationWeatherProvider =
+    FutureProvider<
+        WeatherEntity>((ref) async {
+  final locationService =
+      ref.read(
+    locationServiceProvider,
+  );
+
+  final position =
+      await locationService
+          .getCurrentLocation();
+
+  return ref
+      .read(weatherRepositoryProvider)
+      .getCurrentWeatherByLocation(
+        position.latitude,
+        position.longitude,
+      );
+});

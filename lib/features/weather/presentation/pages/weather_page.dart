@@ -91,21 +91,32 @@ class WeatherPage extends ConsumerWidget {
                                     Icons.search,
                                     color: Colors.white70,
                                   ),
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () {
-                                      final cityName = cityController.text
-                                          .trim();
+                                  suffixIcon: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.my_location,
+                                          color: Colors.white70,
+                                        ),
+                                        onPressed: () async {
+                                          // Next step
+                                        },
+                                      ),
 
-                                      if (cityName.isNotEmpty) {
-                                        ref
-                                            .read(cityProvider.notifier)
-                                            .setCity(cityName);
-                                      }
-                                    },
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.arrow_forward,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          ref
+                                                  .read(cityProvider.notifier)
+                                                  .state =
+                                              cityController.text;
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   border: InputBorder.none,
                                 ),

@@ -35,4 +35,21 @@ class WeatherRemoteDataSource {
 
     return forecasts.map((json) => ForecastModel.fromJson(json)).toList();
   }
+
+  Future<WeatherModel> getCurrentWeatherByLocation(
+    double lat,
+    double lon,
+  ) async {
+    final response = await dio.get(
+      '${ApiConstants.baseUrl}/weather',
+      queryParameters: {
+        'lat': lat,
+        'lon': lon,
+        'appid': ApiConstants.apiKey,
+        'units': 'metric',
+      },
+    );
+
+    return WeatherModel.fromJson(response.data);
+  }
 }
