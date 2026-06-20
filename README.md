@@ -119,6 +119,20 @@ Example:
 ```dart
 static const String apiKey = 'YOUR_API_KEY';
 ```
+## 📥 Download APK
+
+Download the latest SkyCast Android application from the Releases page:
+
+👉 [Download SkyCast APK](../../releases/latest)
+
+### Supported Architecture
+
+* ARM64 (Recommended for modern Android devices)
+* Android 8.0+
+
+Current Release:
+
+* SkyCast v1.0.0
 
 ## 🎯 Future Improvements
 
