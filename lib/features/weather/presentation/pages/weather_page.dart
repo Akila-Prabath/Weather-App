@@ -6,6 +6,7 @@ import '../providers/weather_provider.dart';
 import 'forecast_page.dart';
 import '../../domain/entities/forecast_entity.dart';
 import '../../../../core/utils/weather_background.dart';
+import '../widgets/error_widget.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({super.key});
@@ -51,11 +52,12 @@ class WeatherPage extends ConsumerWidget {
               child: CircularProgressIndicator(color: Colors.white),
             ),
 
-            error: (error, stack) => Center(
-              child: Text(
-                error.toString(),
-                style: const TextStyle(color: Colors.white),
-              ),
+            error: (error, stack) => WeatherErrorWidget(
+              onRetry: () {
+                ref.invalidate(weatherProvider(city));
+
+                ref.invalidate(forecastProvider(city));
+              },
             ),
 
             data: (weather) {
@@ -240,9 +242,10 @@ class WeatherPage extends ConsumerWidget {
                                   color: Colors.white,
                                 ),
 
-                                error: (e, _) => Text(
-                                  e.toString(),
-                                  style: const TextStyle(color: Colors.white),
+                                error: (e, _) => WeatherErrorWidget(
+                                  onRetry: () {
+                                    ref.invalidate(forecastProvider(city));
+                                  },
                                 ),
 
                                 data: (forecasts) {
