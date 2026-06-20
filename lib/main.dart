@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'features/weather/presentation/pages/weather_page.dart';
-
+//import 'features/weather/presentation/pages/weather_page.dart';
+import 'features/splash/presentation/pages/splash_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +24,7 @@ class WeatherApp extends StatelessWidget {
       debugShowCheckedModeBanner:
           false,
 
-      home: WeatherPage(),
+      home: const SplashPage(),
     );
   }
 }
