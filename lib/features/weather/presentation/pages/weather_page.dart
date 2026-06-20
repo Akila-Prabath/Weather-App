@@ -5,8 +5,9 @@ import '../widgets/weather_detail_card.dart';
 import '../providers/weather_provider.dart';
 import 'forecast_page.dart';
 import '../../domain/entities/forecast_entity.dart';
-import '../../../../core/utils/weather_background.dart';
+//import '../../../../core/utils/weather_background.dart';
 import '../widgets/error_widget.dart';
+import '../widgets/sun_card.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({super.key});
@@ -64,7 +65,13 @@ class WeatherPage extends ConsumerWidget {
               final currentDate = DateFormat(
                 'EEEE, d MMM',
               ).format(DateTime.now());
+              final sunriseTime = DateFormat('hh:mm a').format(
+                DateTime.fromMillisecondsSinceEpoch(weather.sunrise * 1000),
+              );
 
+              final sunsetTime = DateFormat('hh:mm a').format(
+                DateTime.fromMillisecondsSinceEpoch(weather.sunset * 1000),
+              );
               return LayoutBuilder(
                 builder: (context, constraints) {
                   return RefreshIndicator(
@@ -234,6 +241,31 @@ class WeatherPage extends ConsumerWidget {
                                 ],
                               ),
 
+                              const SizedBox(height: 12),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: SunCard(
+                                      icon: Icons.wb_sunny_outlined,
+                                      title: 'Sunrise',
+                                      time: sunriseTime,
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  Expanded(
+                                    child: SunCard(
+                                      icon: Icons.nightlight_round,
+                                      title: 'Sunset',
+                                      time: sunsetTime,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 30),
                               const SizedBox(height: 35),
 
                               // Forecast Section

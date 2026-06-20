@@ -8,6 +8,8 @@ class WeatherEntity {
   final int pressure;
   final double feelsLike;
   final int visibility;
+  final int sunrise;
+  final int sunset;
 
   const WeatherEntity({
     required this.cityName,
@@ -19,5 +21,7 @@ class WeatherEntity {
     required this.pressure,
     required this.feelsLike,
     required this.visibility,
+    required this.sunrise,
+    required this.sunset,
   });
 }

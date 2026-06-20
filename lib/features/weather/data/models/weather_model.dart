@@ -11,6 +11,8 @@ class WeatherModel extends WeatherEntity {
     required super.pressure,
     required super.feelsLike,
     required super.visibility,
+    required super.sunrise,
+    required super.sunset,
   });
 
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,9 @@ class WeatherModel extends WeatherEntity {
       feelsLike: (json['main']['feels_like'] as num).toDouble(),
 
       visibility: json['visibility'],
+
+      sunrise: json['sys']['sunrise'],
+      sunset: json['sys']['sunset'],
     );
   }
 }
