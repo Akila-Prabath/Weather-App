@@ -22,12 +22,7 @@ class WeatherDetailCard
 
       decoration: BoxDecoration(
         color:
-            const Color.fromARGB(
-          255,
-          3,
-          39,
-          50,
-        ),
+            Colors.black.withOpacity(0.25),
         borderRadius:
             BorderRadius.circular(
           20,

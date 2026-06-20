@@ -14,7 +14,7 @@ class ForecastPage extends ConsumerWidget {
     final forecastAsync = ref.watch(forecastProvider(city));
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 1, 17, 22),
+      backgroundColor: const Color.fromARGB(255, 0, 12, 32),
 
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -39,9 +39,9 @@ class ForecastPage extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color.fromARGB(255, 1, 17, 22),
-              Color.fromARGB(255, 10, 61, 80),
-              Color.fromARGB(255, 28, 123, 147),
+              Color.fromARGB(255, 0, 74, 173),
+              Color.fromARGB(255, 1, 28, 72),
+              Color.fromARGB(255, 0, 12, 32),
             ],
           ),
         ),
@@ -195,8 +195,8 @@ class HourlyForecastCard extends StatelessWidget {
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
         color: selected
-            ? Color.fromARGB(255, 3, 39, 50)
-            : Color.fromARGB(255, 3, 39, 50),
+            ? Colors.black.withOpacity(0.35)
+            : Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white10),
       ),
@@ -248,7 +248,7 @@ class ForecastDayCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 3, 39, 50),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: Colors.white10),
       ),

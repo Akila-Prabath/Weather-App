@@ -8,6 +8,7 @@ import '../../domain/entities/forecast_entity.dart';
 //import '../../../../core/utils/weather_background.dart';
 import '../widgets/error_widget.dart';
 import '../widgets/sun_card.dart';
+import '../../../../core/utils/weather_image.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({super.key});
@@ -39,9 +40,9 @@ class WeatherPage extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color.fromARGB(255, 1, 17, 22),
-              Color.fromARGB(255, 10, 61, 80),
-              Color.fromARGB(255, 28, 123, 147),
+              Color.fromARGB(255, 0, 74, 173),
+              Color.fromARGB(255, 1, 28, 72),
+              Color.fromARGB(255, 0, 12, 32),
             ],
           ),
         ),
@@ -102,7 +103,7 @@ class WeatherPage extends ConsumerWidget {
                               // Search Bar
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.08),
+                                  color: Colors.black.withOpacity(0.35),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: TextField(
@@ -173,10 +174,10 @@ class WeatherPage extends ConsumerWidget {
 
                               const SizedBox(height: 20),
 
-                              Image.network(
-                                'https://openweathermap.org/img/wn/${weather.iconCode}@4x.png',
-                                width: 120,
-                                height: 120,
+                              Image.asset(
+                                WeatherImage.getImage(weather.iconCode),
+                                width: 180,
+                                height: 180,
                               ),
 
                               Text(
